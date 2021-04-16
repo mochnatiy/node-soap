@@ -319,5 +319,26 @@ describe('WSDL Parser (non-strict)', () => {
     assert.equal(parsed, '<a>a</a><b>b</b>');
   });
 
+  it('should return the right amount of schemas with no targetNamespace', (done) => {
+    soap.createClient(__dirname+'/wsdl/schema_with_no_targetnamespace.wsdl', function(err, client) {
+      assert.ifError(err);
+      assert.equal(Object.keys(client.wsdl.definitions.schemas).length, 2);
+      assert.ok(
+        client.wsdl.definitions.schemas.hasOwnProperty('http://www.Dummy.com/Common/Types') &&
+        client.wsdl.definitions.schemas.hasOwnProperty('http://www.Dummy.com/Name/Types')
+      )
+      done();
+    });
+  });
 
+  it('should not return both schemas when targetNamespace is undefined (no imports)', (done) => {
+    soap.createClient(
+      __dirname + "/wsdl/schemas_without_targetnamespace.wsdl",
+      function(err, client) {
+        assert.ifError(err);
+        assert.equal(Object.keys(client.wsdl.definitions.schemas).length, 1);
+        done();
+      }
+    );
+  })
 });
